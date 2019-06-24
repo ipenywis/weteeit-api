@@ -5,7 +5,7 @@ const DevConfig: SequelizeConfig = {
   host: 'localhost',
   port: 3306,
   username: 'root',
-  password: 'ISLem1985HAD',
+  password: 'Bb09042000"',
   database: 'weteeit',
 };
 

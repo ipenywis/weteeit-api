@@ -3,13 +3,61 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type Mutation {
+  storeProduct(newProductData: NewProductInput!): Product!
+  something(id: String!): Order
+  storeOrder(newOrderData: NewOrderInput!): Order
+}
+
+input NewOrderInput {
+  productId: String!
+  email: String!
+  address: String!
+  phone: String!
+  facebook_profile: String!
+  firstName: String!
+  lastName: String!
+  wilaya: String!
+  city: String!
+  quantity: Int!
+}
+
+input NewProductInput {
+  name: String!
+  type: String!
+  available: Boolean!
+  price: Int!
+  imageUrl: String!
+}
+
+type Order {
+  id: Int!
+  transactionId: String!
+  email: String!
+  phone: String!
+  facebook_profile: String
+  firstName: String!
+  lastName: String!
+  address: String!
+  wilaya: String!
+  city: String!
+  quantity: Int!
+}
+
 type Product {
   id: Int!
   name: String!
   type: String!
   available: Boolean!
+  price: Int!
+  imageUrl: String!
 }
 
 type Query {
-  product(name: String!): Product!
+  products(name: String!): [Product!]!
+  productByName(name: String!): Product!
+  productById(id: String!): Product!
+  orders: [Order!]!
+  orderById(id: String!): Order!
+  orderByTransactionId(transactionId: String!): Order!
 }

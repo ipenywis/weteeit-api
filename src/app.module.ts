@@ -3,17 +3,19 @@ import { AppService } from './app.service';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ProductModule } from './products/product.module';
 import { DatabaseModule } from './database/database.module';
+import { OrderModule } from './orders/order.module';
 
 @Module({
   imports: [
     DatabaseModule,
-    ProductModule,
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
       debug: true,
       playground: true,
       autoSchemaFile: 'schema.gql',
     }),
+    ProductModule,
+    OrderModule,
   ],
   providers: [AppService],
 })
