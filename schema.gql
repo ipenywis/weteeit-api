@@ -25,7 +25,7 @@ input NewOrderInput {
 input NewProductInput {
   name: String!
   type: String!
-  available: Boolean!
+  available: Boolean
   price: Int!
   imageUrl: String!
 }
@@ -54,7 +54,7 @@ type Product {
 }
 
 type Query {
-  products(name: String!): [Product!]!
+  products: [Product!]!
   productByName(name: String!): Product!
   productById(id: String!): Product!
   orders: [Order!]!

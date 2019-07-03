@@ -16,6 +16,21 @@ export class ProductService {
     private readonly PRODUCTS_REPOSITORY: typeof Product,
   ) {}
 
+  findAll(): Promise<Product[]> {
+    return new Promise(async (rs, rj) => {
+      const products = await this.PRODUCTS_REPOSITORY.findAll().catch(err =>
+        rj(err),
+      );
+      if (!products || isEmpty(products))
+        return rj(
+          new NotFoundException(
+            'No Products exists at the moment, please try again later',
+          ),
+        );
+      return rs(products);
+    });
+  }
+
   findOneById(id: string): Promise<Product> {
     return new Promise(async (rs, rj) => {
       const product = await this.PRODUCTS_REPOSITORY.findOne({

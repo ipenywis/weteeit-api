@@ -13,6 +13,7 @@ import { OrderModule } from './orders/order.module';
       debug: true,
       playground: true,
       autoSchemaFile: 'schema.gql',
+      introspection: true,
     }),
     ProductModule,
     OrderModule,

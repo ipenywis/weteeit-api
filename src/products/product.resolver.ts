@@ -9,9 +9,10 @@ export class ProductResolver {
   constructor(private readonly productsService: ProductService) {}
 
   @Query(returns => [Product], { name: 'products' })
-  getProducts(@Args() args: ProductArgs) {
-    let newProduct = new Product();
-    return newProduct;
+  async getProducts() {
+    return await this.productsService.findAll().catch(err => {
+      throw err;
+    });
   }
 
   @Query(returns => Product, { name: 'productByName' })

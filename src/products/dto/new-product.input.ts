@@ -15,7 +15,7 @@ export class NewProductInput {
   @Field()
   type: string;
 
-  @Field()
+  @Field({ nullable: true })
   available?: boolean;
 
   @Field(type => Int)
