@@ -3,16 +3,32 @@ import { Product } from './models/product';
 import { ProductArgs } from './dto/products.args';
 import { ProductService } from './product.service';
 import { NewProductInput } from './dto/new-product.input';
+import { Int, ObjectType } from 'type-graphql';
+import { ProductsWithPagination } from './types';
 
 @Resolver(of => Product)
 export class ProductResolver {
   constructor(private readonly productsService: ProductService) {}
 
-  @Query(returns => [Product], { name: 'products' })
+  @Query(returns => ProductsWithPagination, { name: 'products' })
   async getProducts() {
     return await this.productsService.findAll().catch(err => {
       throw err;
     });
+  }
+
+  @Query(returns => ProductsWithPagination, { name: 'productsByType' })
+  async getProductsByType(
+    @Args('type') type: string,
+    @Args({ name: 'pageId', nullable: true, type: () => Int }) pageId?: number,
+    @Args({ name: 'limitPerPage', nullable: true, type: () => Int })
+    limitPerPage?: number,
+  ) {
+    return await this.productsService
+      .findByType(type, pageId, limitPerPage)
+      .catch(err => {
+        throw err;
+      });
   }
 
   @Query(returns => Product, { name: 'productByName' })
@@ -37,7 +53,6 @@ export class ProductResolver {
   async storeProduct(
     @Args('newProductData') newProductData: NewProductInput,
   ): Promise<Product> {
-    console.log('Inserting new Product');
     const product = await this.productsService
       .insertProduct(newProductData)
       .catch(err => {

@@ -8,13 +8,23 @@ import {
 import { Product } from './models/product';
 import { isEmpty } from 'lodash';
 import { NewProductInput } from './dto/new-product.input';
+import { ConfigService, IConfig } from '../config/config.service';
+import { PaginationService } from '../pagination/pagination.service';
+import { ProductsWithPagination } from '../products/types';
 
 @Injectable()
 export class ProductService {
+  private readonly defaultConfig: IConfig;
+
   constructor(
+    private readonly configSerivce: ConfigService,
+    private readonly paginationService: PaginationService,
     @Inject('PRODUCTS_REPOSITORY')
     private readonly PRODUCTS_REPOSITORY: typeof Product,
-  ) {}
+  ) {
+    //Quick Access for Default Config
+    this.defaultConfig = this.configSerivce.getDefaultConfig();
+  }
 
   findAll(): Promise<Product[]> {
     return new Promise(async (rs, rj) => {
@@ -44,13 +54,39 @@ export class ProductService {
 
   findOneByName(name: string): Promise<Product> {
     return new Promise(async (rs, rj) => {
-      console.log('Fetching Product by name');
       const product = await this.PRODUCTS_REPOSITORY.findOne({
         where: { name },
       }).catch(err => rj(new InternalServerErrorException()));
       if (!product || isEmpty(product))
         return rj(new NotFoundException('Product Not Found'));
       return rs(product);
+    });
+  }
+
+  findByType(
+    type: string,
+    pageId?: number,
+    limitPerPage?: number,
+  ): Promise<ProductsWithPagination> {
+    return new Promise(async (rs, rj) => {
+      const queryConfig = this.paginationService.generateQuery(
+        pageId,
+        limitPerPage,
+      );
+      const products = await this.PRODUCTS_REPOSITORY.findAll({
+        ...queryConfig,
+        where: { type },
+      }).catch(err => rj(err));
+      if (!products || isEmpty(products))
+        return rj(
+          new NotFoundException('Products Not Found with specified type'),
+        );
+      const paginationMetadata = await this.paginationService
+        .paginate(this.PRODUCTS_REPOSITORY)
+        .catch(err => rj(new InternalServerErrorException()));
+      if (paginationMetadata)
+        return rs({ products: products, pagination: paginationMetadata });
+      else return rs({ products: products, pagination: null });
     });
   }
 

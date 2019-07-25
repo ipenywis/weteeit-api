@@ -44,6 +44,12 @@ type Order {
   quantity: Int!
 }
 
+type paginationMetaDataClass {
+  numPages: Int!
+  perPage: Int!
+  pageId: Int!
+}
+
 type Product {
   id: Int!
   name: String!
@@ -53,8 +59,14 @@ type Product {
   imageUrl: String!
 }
 
-type Query {
+type productWithPagination {
   products: [Product!]!
+  pagination: paginationMetaDataClass
+}
+
+type Query {
+  products: productWithPagination!
+  productsByType(limitPerPage: Int, pageId: Int, type: String!): productWithPagination!
   productByName(name: String!): Product!
   productById(id: String!): Product!
   orders: [Order!]!
