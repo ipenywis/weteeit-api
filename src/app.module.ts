@@ -7,7 +7,7 @@ import { OrderModule } from './orders/order.module';
 import { AppController } from './app.controller';
 
 @Module({
-  /*imports: [
+  imports: [
     DatabaseModule,
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
@@ -18,7 +18,7 @@ import { AppController } from './app.controller';
     }),
     ProductModule,
     OrderModule,
-  ],*/
+  ],
   providers: [AppService],
   controllers: [AppController],
 })
