@@ -4,9 +4,10 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ProductModule } from './products/product.module';
 import { DatabaseModule } from './database/database.module';
 import { OrderModule } from './orders/order.module';
+import { AppController } from './app.controller';
 
 @Module({
-  imports: [
+  /*imports: [
     DatabaseModule,
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
@@ -17,7 +18,8 @@ import { OrderModule } from './orders/order.module';
     }),
     ProductModule,
     OrderModule,
-  ],
+  ],*/
   providers: [AppService],
+  controllers: [AppController],
 })
 export class AppModule {}
