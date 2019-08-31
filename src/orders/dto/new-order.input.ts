@@ -1,13 +1,29 @@
-import { InputType, Field, Int } from 'type-graphql';
-import { IsEmail, IsPhoneNumber, Matches, IsUrl } from 'class-validator';
-import { isRegExp } from 'util';
+import { InputType, Field, Int, ObjectType } from 'type-graphql';
+import {
+  IsEmail,
+  IsPhoneNumber,
+  Matches,
+  IsUrl,
+  IsArray,
+  IsString,
+  IsInt,
+  IsOptional,
+} from 'class-validator';
 import { ALGERIA_PHONE_REGEX } from '../../common/regex';
 
 @InputType()
-export class NewOrderInput {
+export class OrderProductInput {
   @Field()
-  productId: string;
+  @IsString()
+  name: string;
 
+  @Field(type => Int)
+  @IsInt()
+  quantity: number;
+}
+
+@InputType()
+export class NewOrderInput {
   @Field()
   @IsEmail()
   email: string;
@@ -19,9 +35,10 @@ export class NewOrderInput {
   @Matches(ALGERIA_PHONE_REGEX)
   phone: string;
 
-  @Field()
+  @Field({ nullable: true })
   @IsUrl()
-  facebook_profile: string;
+  @IsOptional()
+  facebook_profile?: string;
 
   @Field()
   firstName: string;
@@ -35,6 +52,10 @@ export class NewOrderInput {
   @Field()
   city: string;
 
-  @Field(type => Int)
-  quantity: number;
+  @Field({ nullable: true })
+  instructions: string;
+
+  @Field(type => [OrderProductInput])
+  @IsArray()
+  products: OrderProductInput[];
 }

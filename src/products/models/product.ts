@@ -6,9 +6,11 @@ import {
   DataType,
   Default,
   HasMany,
+  BelongsToMany,
 } from 'sequelize-typescript';
 import { ProductTypes } from '../types';
 import { Order } from '../../orders/models/order';
+import { OrderProduct } from '../../orders/models/orderProduct';
 
 @Table({ tableName: 'products' })
 @ObjectType()
@@ -46,6 +48,9 @@ export class Product extends Model<Product> {
   @Field()
   imageUrl: string;
 
-  @HasMany(of => Order)
+  @BelongsToMany(() => Order, () => OrderProduct)
   orders: Order[];
+
+  @Field(() => [OrderProduct], { nullable: true })
+  orderProduct: OrderProduct[];
 }

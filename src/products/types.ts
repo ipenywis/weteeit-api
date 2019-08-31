@@ -5,7 +5,7 @@ import { PaginationMetaDataClass } from '../typings/types';
 export enum ProductTypes {
   TSHIRT = 'TSHIRT',
   HOODIE = 'HOODIE',
-  SWEATSHIRT = 'SWEATSHIRT',
+  SWEETSHIRT = 'SWEETSHIRT',
   Poster = 'POSTER',
   Mug = 'MUG',
   Pillows = 'PILLOWS',

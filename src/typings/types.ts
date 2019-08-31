@@ -4,18 +4,22 @@ export interface IPaginationMetadata {
   numPages: number;
   perPage: number;
   pageId: number;
+  count: number;
 }
 
 @ObjectType('paginationMetaDataClass')
 export class PaginationMetaDataClass {
-  @Field(type => Int)
-  numPages: number;
+  @Field(type => Int, { nullable: true })
+  numPages?: number;
 
-  @Field(type => Int)
-  perPage: number;
+  @Field(type => Int, { nullable: true })
+  perPage?: number;
 
-  @Field(type => Int)
-  pageId: number;
+  @Field(type => Int, { nullable: true })
+  pageId?: number;
+
+  @Field(type => Int, { nullable: true })
+  count?: number;
 }
 
 /*

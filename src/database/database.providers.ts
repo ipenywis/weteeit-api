@@ -3,6 +3,9 @@ import { ConnectionTimedOutError, ConnectionError } from 'sequelize';
 import { ProdConfig, DevConfig } from './config';
 import { Product } from '../products/models/product';
 import { Order } from '../orders/models/order';
+import { Shipping } from '../shipping/models/shipping';
+import { OrderProduct } from '../orders/models/orderProduct';
+import { Admin } from '../admin/models/admin';
 
 export const databaseProviders = [
   {
@@ -14,7 +17,7 @@ export const databaseProviders = [
       //TODO: Add all models to sequelize
       try {
         //ADD ALL MODELS HERE
-        sequelize.addModels([Product, Order]);
+        sequelize.addModels([Product, Order, OrderProduct, Shipping, Admin]);
         //SYNC MODELS METADATA to DB
         return await sequelize.sync();
       } catch (err) {

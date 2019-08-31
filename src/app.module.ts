@@ -5,19 +5,23 @@ import { ProductModule } from './products/product.module';
 import { DatabaseModule } from './database/database.module';
 import { OrderModule } from './orders/order.module';
 import { AppController } from './app.controller';
+import { ShippingModule } from './shipping/shipping.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
     DatabaseModule,
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
-      debug: true,
+      debug: false,
       playground: true,
       autoSchemaFile: 'schema.gql',
       introspection: true,
     }),
     ProductModule,
     OrderModule,
+    ShippingModule,
+    AdminModule,
   ],
   providers: [AppService],
   controllers: [AppController],

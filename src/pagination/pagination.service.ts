@@ -4,6 +4,7 @@ import { Model } from 'sequelize';
 import { Product } from '../products/models/product';
 import { Order } from '../orders/models/order';
 import { IPaginationMetadata } from '../typings/types';
+import { ICountOptions } from 'sequelize-typescript';
 
 export interface IPaginationQuery {
   limit: number;
@@ -39,26 +40,29 @@ export class PaginationService {
    * Query metadata needed for pagination
    * @param targetModel
    */
-  async paginate(
+  async paginate<T>(
+    countOptions: ICountOptions<T>,
     targetModel?: TargetModel,
   ): Promise<IPaginationMetadata | null> {
     try {
       let useModel = this.targetModel;
+
       if (targetModel) useModel = targetModel;
       //Find Count
       let count: number | void = 0;
       //Count Number of Records
-      count = await (useModel as any).count({ where: {} }).catch(err => {
+      count = await (useModel as any).count(countOptions || {}).catch(err => {
         throw err;
       });
 
-      const numPages =
+      const numPages = Math.ceil(
         ((count as number) || 0) / this.lastPaginationQuery.limit ||
-        this.defaultConfig.limitPerPage;
+          this.defaultConfig.limitPerPage,
+      );
       const perPage =
         this.lastPaginationQuery.limit || this.defaultConfig.limitPerPage;
       const pageId = this.lastPageId;
-      return { numPages, perPage, pageId };
+      return { numPages, perPage, pageId, count: count as number };
     } catch (err) {
       return null;
     }

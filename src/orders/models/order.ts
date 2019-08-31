@@ -4,9 +4,15 @@ import {
   Table,
   Model,
   ForeignKey,
+  BelongsToMany,
 } from 'sequelize-typescript';
 import { Field, Int, ObjectType } from 'type-graphql';
 import { Product } from '../../products/models/product';
+import { OrderProduct } from './orderProduct';
+import {
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyAddAssociationMixin,
+} from 'sequelize/types';
 
 @Table({ tableName: 'orders' })
 @ObjectType()
@@ -56,11 +62,27 @@ export class Order extends Model<Order> {
   @Field()
   city: string;
 
-  @Column({ type: DataType.INTEGER, allowNull: false })
+  @Column({ allowNull: true })
+  @Field({ nullable: true })
+  instructions: string;
+
+  /*@Column({ type: DataType.INTEGER, allowNull: false })
   @Field(type => Int)
   quantity: number;
-
-  @Column
+  */
+  /*@Column
   @ForeignKey(of => Product)
   productId: number;
+  */
+
+  @BelongsToMany(() => Product, () => OrderProduct)
+  @Field(type => [Product])
+  products: Product[];
+
+  //Association Mixins
+  public getProducts!: BelongsToManyGetAssociationsMixin<Product>; // Note the null assertions!
+  public addProducts!: BelongsToManyAddAssociationMixin<Product, number>;
+  /*public hasProject!: HasManyHasAssociationMixin<Project, number>;
+  public countProjects!: HasManyCountAssociationsMixin;
+  public createProject!: HasManyCreateAssociationMixin<Project>;*/
 }

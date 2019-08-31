@@ -11,6 +11,8 @@ import { NewProductInput } from './dto/new-product.input';
 import { ConfigService, IConfig } from '../config/config.service';
 import { PaginationService } from '../pagination/pagination.service';
 import { ProductsWithPagination } from '../products/types';
+import { Op } from 'sequelize';
+import { IFindOptions } from 'sequelize-typescript';
 
 @Injectable()
 export class ProductService {
@@ -24,6 +26,10 @@ export class ProductService {
   ) {
     //Quick Access for Default Config
     this.defaultConfig = this.configSerivce.getDefaultConfig();
+  }
+
+  getProductsRepository(): typeof Product {
+    return this.PRODUCTS_REPOSITORY;
   }
 
   findAll(): Promise<Product[]> {
@@ -63,6 +69,24 @@ export class ProductService {
     });
   }
 
+  findAllByName(
+    names: string[],
+    options?: IFindOptions<Product>,
+  ): Promise<Product[]> {
+    return new Promise(async (rs, rj) => {
+      const products = await this.PRODUCTS_REPOSITORY.findAll({
+        ...options,
+        where: { name: { [Op.in]: names } } as any,
+      }).catch(err => {
+        console.log('Error: ', err);
+        rj(new InternalServerErrorException(err));
+      });
+      if (!products || isEmpty(products))
+        return rj(new NotFoundException('Products Not Found'));
+      return rs(products);
+    });
+  }
+
   findByType(
     type: string,
     pageId?: number,
@@ -82,7 +106,7 @@ export class ProductService {
           new NotFoundException('Products Not Found with specified type'),
         );
       const paginationMetadata = await this.paginationService
-        .paginate(this.PRODUCTS_REPOSITORY)
+        .paginate<Product>({ where: { type } }, this.PRODUCTS_REPOSITORY)
         .catch(err => rj(new InternalServerErrorException()));
       if (paginationMetadata)
         return rs({ products: products, pagination: paginationMetadata });
@@ -104,10 +128,10 @@ export class ProductService {
     });
   }
 
-  productExists(id: string): Promise<Boolean> {
+  productExists(name: string): Promise<Boolean> {
     return new Promise(async (rs, rj) => {
       const product = await this.PRODUCTS_REPOSITORY.findOne({
-        where: { id },
+        where: { name },
       }).catch(err => rj(err));
       if (!product || isEmpty(product)) return rs(false);
       return rs(true);

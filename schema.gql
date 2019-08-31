@@ -5,21 +5,21 @@
 
 type Mutation {
   storeProduct(newProductData: NewProductInput!): Product!
-  something(id: String!): Order
   storeOrder(newOrderData: NewOrderInput!): Order
+  storeShipping(newShippingInput: NewShippingInput!): shipping!
 }
 
 input NewOrderInput {
-  productId: String!
   email: String!
   address: String!
   phone: String!
-  facebook_profile: String!
+  facebook_profile: String
   firstName: String!
   lastName: String!
   wilaya: String!
   city: String!
-  quantity: Int!
+  instructions: String
+  products: [OrderProductInput!]!
 }
 
 input NewProductInput {
@@ -28,6 +28,11 @@ input NewProductInput {
   available: Boolean
   price: Int!
   imageUrl: String!
+}
+
+input NewShippingInput {
+  wilaya: String!
+  price: Int!
 }
 
 type Order {
@@ -41,13 +46,26 @@ type Order {
   address: String!
   wilaya: String!
   city: String!
+  instructions: String
+  products: [Product!]!
+}
+
+type OrderProduct {
+  product: Int!
+  order: Int!
+  quantity: Int!
+}
+
+input OrderProductInput {
+  name: String!
   quantity: Int!
 }
 
 type paginationMetaDataClass {
-  numPages: Int!
-  perPage: Int!
-  pageId: Int!
+  numPages: Int
+  perPage: Int
+  pageId: Int
+  count: Int
 }
 
 type Product {
@@ -57,6 +75,7 @@ type Product {
   available: Boolean!
   price: Int!
   imageUrl: String!
+  orderProduct: [OrderProduct!]
 }
 
 type productWithPagination {
@@ -65,11 +84,19 @@ type productWithPagination {
 }
 
 type Query {
-  products: productWithPagination!
+  products: [Product!]!
   productsByType(limitPerPage: Int, pageId: Int, type: String!): productWithPagination!
   productByName(name: String!): Product!
   productById(id: String!): Product!
   orders: [Order!]!
   orderById(id: String!): Order!
   orderByTransactionId(transactionId: String!): Order!
+  shippings: [shipping!]!
+  shipping(wilaya: String!): shipping!
+}
+
+type shipping {
+  id: Int!
+  wilaya: String!
+  price: Int!
 }

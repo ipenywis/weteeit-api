@@ -10,7 +10,7 @@ import { ProductsWithPagination } from './types';
 export class ProductResolver {
   constructor(private readonly productsService: ProductService) {}
 
-  @Query(returns => ProductsWithPagination, { name: 'products' })
+  @Query(returns => [Product], { name: 'products' })
   async getProducts() {
     return await this.productsService.findAll().catch(err => {
       throw err;

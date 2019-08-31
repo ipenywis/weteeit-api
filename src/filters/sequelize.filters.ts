@@ -21,8 +21,6 @@ export class SequelizeExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response: Response = ctx.getResponse();
 
-    console.log('Sequelize Exception Error: ', exception.message);
-
     if (exception instanceof ValidationError) {
       return response
         .status(HttpStatus.BAD_REQUEST)

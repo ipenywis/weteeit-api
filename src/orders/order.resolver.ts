@@ -1,9 +1,8 @@
 import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
 import { Order } from './models/order';
 import { NewOrderInput } from './dto/new-order.input';
-import { UseFilters } from '@nestjs/common';
-import { SequelizeExceptionFilter } from '../filters/sequelize.filters';
 import { OrderSerivce } from './order.service';
+import { BadRequestException, HttpException, Res } from '@nestjs/common';
 
 @Resolver(of => Order)
 //@UseFilters(SequelizeExceptionFilter)
@@ -34,11 +33,6 @@ export class OrderResolver {
   }
 
   @Mutation(returns => Order, { nullable: true })
-  something(@Args('id') id: string) {
-    return { lastName: 'Meow Meow!' };
-  }
-
-  @Mutation(returns => Order, { nullable: true })
   async storeOrder(@Args('newOrderData') newOrderData: NewOrderInput) {
     newOrderData = JSON.parse(JSON.stringify(newOrderData));
     const order = await this.ordersService
@@ -46,6 +40,8 @@ export class OrderResolver {
       .catch(err => {
         throw err;
       });
+
+    console.log('Order: ', order);
     return order;
   }
 }
