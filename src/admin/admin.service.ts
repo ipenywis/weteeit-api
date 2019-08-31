@@ -1,7 +1,6 @@
 import {
   Injectable,
   Inject,
-  BadRequestException,
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -12,8 +11,7 @@ import { Op } from 'sequelize';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '../config/config.service';
 import { LoginDTO } from './dto/login.dto';
-import jwt, { sign } from 'jsonwebtoken';
-import { promisify } from 'bluebird';
+import { jwtSign } from '../utils/promisified';
 
 @Injectable()
 export class AdminService {
@@ -32,6 +30,10 @@ export class AdminService {
     });
   }
 
+  prepareJWTCookie(token: string): string {
+    return 'JWT ' + token;
+  }
+
   async hashPassword(password: string): Promise<string> {
     try {
       const salt = this.configService.getDefaultConfig().passwordSalt;
@@ -39,6 +41,7 @@ export class AdminService {
         throw err;
       });
     } catch (err) {
+      console.log('Error: ', err);
       return password;
     }
   }
@@ -57,22 +60,18 @@ export class AdminService {
     });
   }
 
-  verifyPassword(password: string, adminPassword: string): Promise<boolean> {
-    return new Promise(async (rs, rj) => {
-      const hashedPassword = await this.hashPassword(password).catch(err =>
-        rj(err),
-      );
-      return rs(adminPassword === hashedPassword);
-    });
+  async verifyPassword(
+    password: string,
+    adminPassword: string,
+  ): Promise<boolean> {
+    return await bcrypt.compare(password, adminPassword);
   }
 
-  generateJWT(loginDTO: LoginDTO): Promise<string> {
+  private generateJWT(loginDTO: LoginDTO): Promise<string> {
     return new Promise(async (rs, rj) => {
       const payload = { email: loginDTO.email, username: loginDTO.username };
       const key = this.configService.getDefaultConfig().jwtKey;
-      const signedToken = await promisify(jwt.sign)(payload, key).catch(err =>
-        rj(err),
-      );
+      const signedToken = await jwtSign(payload, key).catch(err => rj(err));
       if (!signedToken || isEmpty(signedToken))
         return rj(new InternalServerErrorException());
       return rs(signedToken as string);
@@ -95,7 +94,9 @@ export class AdminService {
 
       if (!admin || isEmpty(admin))
         return rj(
-          new UnauthorizedException('Email, username or password is wrong'),
+          new UnauthorizedException(
+            'Email, username or password is wrong fgfgf',
+          ),
         );
 
       //Check password
@@ -105,13 +106,21 @@ export class AdminService {
       ).catch(err => rj(err));
       if (!isValidPassword)
         return rj(
-          new UnauthorizedException('Email, username or password is wrong'),
+          new UnauthorizedException(
+            'Email, username or password is wrong SHHUU',
+          ),
         );
 
       //Sign Admin Token
-      const signedToken = await this.generateJWT(loginDTO).catch(
-        err => new InternalServerErrorException(),
+      const signedToken = await this.generateJWT(loginDTO).catch(err =>
+        rj(new InternalServerErrorException()),
       );
+
+      console.log('signed: ', signedToken);
+
+      if (!signedToken || isEmpty(signedToken))
+        throw new InternalServerErrorException();
+
       return rs(signedToken as string);
     });
   }

@@ -1,4 +1,11 @@
-import { IsEmail, IsOptional, IsString, ValidateIf } from 'class-validator';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  ValidateIf,
+  IsBoolean,
+} from 'class-validator';
+import { Default } from 'sequelize-typescript';
 
 export class LoginDTO {
   @ValidateIf(o => !o.username || o.username === '')
@@ -11,4 +18,8 @@ export class LoginDTO {
 
   @IsString()
   password: string;
+
+  @IsOptional()
+  @IsBoolean()
+  rememberMe: boolean = false;
 }

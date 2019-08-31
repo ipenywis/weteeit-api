@@ -3,9 +3,10 @@ import { AdminController } from './admin.controller';
 import { AdminService } from '../admin/admin.service';
 import { adminsProviders } from './admin.providers';
 import { ConfigModule } from '../config/config.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule, AuthModule, ConfigModule],
   controllers: [AdminController],
   providers: [...adminsProviders, AdminService],
 })

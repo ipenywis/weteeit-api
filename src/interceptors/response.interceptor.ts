@@ -16,8 +16,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
   ): Observable<Response<T>> {
     return next.handle().pipe(
       map(response => ({
-        message: response.message,
-        ...JSON.parse(JSON.stringify(response.data)),
+        ...response,
       })),
     );
   }
