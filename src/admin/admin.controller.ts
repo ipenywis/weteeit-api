@@ -9,6 +9,7 @@ import {
   Get,
   Res,
   Req,
+  Param,
 } from '@nestjs/common';
 import { AuthGuard } from '../guards/admin.guard';
 import { CreateAdminDTO } from '../admin/dto/register.dto';
@@ -73,5 +74,17 @@ export class AdminController {
         throw new InternalServerErrorException();
       });
     return new Response<Admin>(admin, 'Admin Successfully Registered!');
+  }
+
+  @Get('verify/:token')
+  async verifyToken(@Param('token') token: string) {
+    const isValid = await this.adminService.verifyToken(token).catch(err => {
+      throw err;
+    });
+
+    return new Response(
+      { valid: isValid },
+      isValid ? 'Token is valid' : 'Token is invalid',
+    );
   }
 }

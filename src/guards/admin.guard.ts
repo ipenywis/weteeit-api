@@ -8,17 +8,22 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { ConfigService } from '../config/config.service';
 import { AuthService, AuthAdmin } from '../auth/auth.service';
+import { GqlExecutionContext } from '@nestjs/graphql';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export abstract class AbstractAuthGuard implements CanActivate {
   constructor(
     private configService: ConfigService,
     private authService: AuthService,
   ) {}
 
+  protected abstract getRequest(context: ExecutionContext): Request;
+
   canActivate(context: ExecutionContext): Promise<boolean> {
     return new Promise<boolean>(async (rs, rj) => {
-      const request: Request = context.switchToHttp().getRequest();
+      //Set Default authenticated to null
+      this.authService.setAuthenticatedAdmin(null);
+      const request: Request = this.getRequest(context);
       const jwtCookieKey = this.configService.getDefaultConfig().authCookieKey;
       const authentication =
         (request.headers[jwtCookieKey] as string) ||
@@ -42,5 +47,25 @@ export class AuthGuard implements CanActivate {
         rs(false);
       }
     });
+  }
+}
+
+export class AuthGuard extends AbstractAuthGuard {
+  constructor(configService: ConfigService, authService: AuthService) {
+    super(configService, authService);
+  }
+
+  getRequest(context: ExecutionContext): Request {
+    return context.switchToHttp().getRequest();
+  }
+}
+
+export class GqlAuthGuard extends AbstractAuthGuard {
+  constructor(configService: ConfigService, authService: AuthService) {
+    super(configService, authService);
+  }
+
+  getRequest(context: ExecutionContext): Request {
+    return GqlExecutionContext.create(context).getContext().req;
   }
 }

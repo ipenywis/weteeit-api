@@ -17,6 +17,7 @@ import { AdminModule } from './admin/admin.module';
       playground: true,
       autoSchemaFile: 'schema.gql',
       introspection: true,
+      context: ({ req }) => ({ req }),
     }),
     ProductModule,
     OrderModule,

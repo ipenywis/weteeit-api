@@ -12,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '../config/config.service';
 import { LoginDTO } from './dto/login.dto';
 import { jwtSign } from '../utils/promisified';
+import jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AdminService {
@@ -67,7 +68,10 @@ export class AdminService {
     return await bcrypt.compare(password, adminPassword);
   }
 
-  private generateJWT(loginDTO: LoginDTO): Promise<string> {
+  private generateJWT(loginDTO: {
+    username: string;
+    email: string;
+  }): Promise<string> {
     return new Promise(async (rs, rj) => {
       const payload = { email: loginDTO.email, username: loginDTO.username };
       const key = this.configService.getDefaultConfig().jwtKey;
@@ -94,9 +98,7 @@ export class AdminService {
 
       if (!admin || isEmpty(admin))
         return rj(
-          new UnauthorizedException(
-            'Email, username or password is wrong fgfgf',
-          ),
+          new UnauthorizedException('Email, username or password is wrong'),
         );
 
       //Check password
@@ -106,22 +108,39 @@ export class AdminService {
       ).catch(err => rj(err));
       if (!isValidPassword)
         return rj(
-          new UnauthorizedException(
-            'Email, username or password is wrong SHHUU',
-          ),
+          new UnauthorizedException('Email, username or password is wrong'),
         );
 
       //Sign Admin Token
-      const signedToken = await this.generateJWT(loginDTO).catch(err =>
-        rj(new InternalServerErrorException()),
-      );
-
-      console.log('signed: ', signedToken);
+      const signedToken = await this.generateJWT({
+        username: admin.username,
+        email: admin.email,
+      }).catch(err => rj(new InternalServerErrorException()));
 
       if (!signedToken || isEmpty(signedToken))
         throw new InternalServerErrorException();
 
       return rs(signedToken as string);
+    });
+  }
+
+  verifyToken(auth: string): Promise<boolean> {
+    return new Promise<boolean>(async (rs, rj) => {
+      if (auth && auth.toString().trim() !== '') {
+        const token = auth.toLowerCase().includes('jwt ')
+          ? auth.split(' ')[1]
+          : auth;
+        const jwtSecretKey = this.configService.getDefaultConfig().jwtKey;
+        //Validate JWT Token
+        jwt.verify(token, jwtSecretKey, (err, decoded) => {
+          if (err) rj(new InternalServerErrorException());
+          else if (decoded) {
+            rs(true);
+          } else rs(false);
+        });
+      } else {
+        rs(false);
+      }
     });
   }
 }

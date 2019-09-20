@@ -3,6 +3,17 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type Admin {
+  id: Float!
+  email: String!
+  username: String!
+}
+
+type AuthAdmin {
+  username: String!
+  email: String!
+}
+
 type Mutation {
   storeProduct(newProductData: NewProductInput!): Product!
   storeOrder(newOrderData: NewOrderInput!): Order
@@ -93,6 +104,7 @@ type Query {
   orderByTransactionId(transactionId: String!): Order!
   shippings: [shipping!]!
   shipping(wilaya: String!): shipping!
+  getAuthenticated: AuthAdmin
 }
 
 type shipping {
