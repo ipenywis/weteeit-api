@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Product } from './models/product';
 import { isEmpty } from 'lodash';
-import { NewProductInput } from './dto/new-product.input';
+import { ProductInput } from './dto/product.input';
 import { ConfigService, IConfig } from '../config/config.service';
 import { PaginationService } from '../pagination/pagination.service';
 import { ProductsWithPagination } from '../products/types';
@@ -75,7 +75,7 @@ export class ProductService {
   ): Promise<Product[]> {
     return new Promise(async (rs, rj) => {
       const products = await this.PRODUCTS_REPOSITORY.findAll({
-        ...options,
+        ...(options as any),
         where: { name: { [Op.in]: names } } as any,
       }).catch(err => {
         console.log('Error: ', err);
@@ -114,7 +114,7 @@ export class ProductService {
     });
   }
 
-  insertProduct(productInput: NewProductInput): Promise<Product> {
+  insertProduct(productInput: ProductInput): Promise<Product> {
     return new Promise(async (rs, rj) => {
       productInput = JSON.parse(JSON.stringify(productInput));
       const createdProduct = await this.PRODUCTS_REPOSITORY.create(
@@ -128,13 +128,37 @@ export class ProductService {
     });
   }
 
-  productExists(name: string): Promise<Boolean> {
+  updateProduct(id: number, productInput: ProductInput): Promise<Product> {
+    return new Promise(async (rs, rj) => {
+      productInput = JSON.parse(JSON.stringify(productInput));
+      const updatedResult = await this.PRODUCTS_REPOSITORY.update(
+        productInput,
+        { where: { id } },
+      ).catch(err => rj(err));
+      if (!updatedResult || isEmpty(updatedResult))
+        return rj(new BadRequestException('Could Not Update Product'));
+      //NOTE: Sequezlie Update method returns iterable array of [updatedNumber, updatedProduct[]]
+      else return rs({ id, ...productInput } as Product);
+    });
+  }
+
+  productExists(name: string): Promise<boolean> {
     return new Promise(async (rs, rj) => {
       const product = await this.PRODUCTS_REPOSITORY.findOne({
         where: { name },
       }).catch(err => rj(err));
       if (!product || isEmpty(product)) return rs(false);
       return rs(true);
+    });
+  }
+
+  deleteProduct(name: string): Promise<boolean> {
+    return new Promise(async (rs, rj) => {
+      const product = await this.PRODUCTS_REPOSITORY.destroy({
+        where: { name },
+      }).catch(err => rj(err));
+      if (!product) return rs(false);
+      else return rs(true);
     });
   }
 }

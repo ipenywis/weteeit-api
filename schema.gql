@@ -15,8 +15,11 @@ type AuthAdmin {
 }
 
 type Mutation {
-  storeProduct(newProductData: NewProductInput!): Product!
+  storeProduct(newProductData: ProductInput!): Product!
+  deleteProduct(name: String!): Boolean!
+  updateProduct(updatedProductData: ProductInput!, id: Int!): Product!
   storeOrder(newOrderData: NewOrderInput!): Order
+  orderShipped(id: Int!): Boolean
   storeShipping(newShippingInput: NewShippingInput!): shipping!
 }
 
@@ -30,15 +33,8 @@ input NewOrderInput {
   wilaya: String!
   city: String!
   instructions: String
+  shipped: Boolean = false
   products: [OrderProductInput!]!
-}
-
-input NewProductInput {
-  name: String!
-  type: String!
-  available: Boolean
-  price: Int!
-  imageUrl: String!
 }
 
 input NewShippingInput {
@@ -58,6 +54,7 @@ type Order {
   wilaya: String!
   city: String!
   instructions: String
+  shipped: Boolean!
   products: [Product!]!
 }
 
@@ -89,9 +86,22 @@ type Product {
   orderProduct: [OrderProduct!]
 }
 
+input ProductInput {
+  name: String!
+  type: String!
+  available: Boolean
+  price: Int!
+  imageUrl: String!
+}
+
 type productWithPagination {
   products: [Product!]!
   pagination: paginationMetaDataClass
+}
+
+type ProductWithQuantity {
+  product: Product!
+  quantity: Int!
 }
 
 type Query {
@@ -99,7 +109,9 @@ type Query {
   productsByType(limitPerPage: Int, pageId: Int, type: String!): productWithPagination!
   productByName(name: String!): Product!
   productById(id: String!): Product!
+  productExists(name: String!): Boolean!
   orders: [Order!]!
+  orderProducts(id: Int!): [ProductWithQuantity!]!
   orderById(id: String!): Order!
   orderByTransactionId(transactionId: String!): Order!
   shippings: [shipping!]!

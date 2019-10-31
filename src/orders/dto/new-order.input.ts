@@ -10,6 +10,7 @@ import {
   IsOptional,
 } from 'class-validator';
 import { ALGERIA_PHONE_REGEX } from '../../common/regex';
+import { Default } from 'sequelize-typescript';
 
 @InputType()
 export class OrderProductInput {
@@ -54,6 +55,9 @@ export class NewOrderInput {
 
   @Field({ nullable: true })
   instructions: string;
+
+  @Field({ nullable: true })
+  shipped: boolean = false;
 
   @Field(type => [OrderProductInput])
   @IsArray()

@@ -30,6 +30,15 @@ export class ShippingService {
     });
   }
 
+  findByWilaya(wilaya: string): Promise<Shipping> {
+    return new Promise(async (rs, rj) => {
+      const shipping = await this.SHIPPINGS_REPOSITORY.findOne({ where: { wilaya } }).catch((err) => rj(err));
+      if(!shipping || isEmpty(shipping))
+        return rj(new NotFoundException("No Shipping details found for wilaya"));
+      return rs(shipping);
+    });
+  }
+
   insertShipping(shippingInput: NewShippingInput): Promise<Shipping> {
     return new Promise(async (rs, rj) => {
       shippingInput = JSON.parse(JSON.stringify(shippingInput));

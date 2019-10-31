@@ -66,6 +66,10 @@ export class Order extends Model<Order> {
   @Field({ nullable: true })
   instructions: string;
 
+  @Column({ allowNull: false })
+  @Field(type => Boolean, { nullable: false })
+  shipped: boolean;
+
   /*@Column({ type: DataType.INTEGER, allowNull: false })
   @Field(type => Int)
   quantity: number;

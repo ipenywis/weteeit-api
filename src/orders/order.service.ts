@@ -10,7 +10,8 @@ import { isEmpty } from 'lodash';
 import { NewOrderInput } from '../orders/dto/new-order.input';
 import { ProductService } from '../products/product.service';
 import { OrderProduct } from '../orders/models/orderProduct';
-import { Op } from 'sequelize';
+import { Product } from '../products/models/product';
+import { ProductWithQuantity } from './types';
 
 @Injectable()
 export class OrderSerivce {
@@ -48,13 +49,18 @@ export class OrderSerivce {
 
   findAll() {
     return new Promise(async (rs, rj) => {
-      const orders = await this.ORDERS_REPOSITORY.findAll().catch(err =>
-        rj(err),
-      );
+      const orders = await this.ORDERS_REPOSITORY.findAll({
+        include: [{ model: Product, as: 'products' }],
+      }).catch(err => rj(err));
       if (!orders || isEmpty(orders))
         return rj(
           new NotFoundException('No Orders are available at the moment'),
         );
+
+      orders.map(order => {
+        console.log('Products: ', order.products);
+      });
+
       return rs(orders);
     });
   }
@@ -103,6 +109,7 @@ export class OrderSerivce {
           wilaya: orderInput.wilaya,
           city: orderInput.city,
           instructions: orderInput.instructions,
+          shipped: orderInput.shipped,
           transactionId,
         };
         //Build & Save order
@@ -155,6 +162,65 @@ export class OrderSerivce {
           ...plainOrder,
           products: plainProducts,
         });
+      }
+    });
+  }
+
+  setOrderShipped(id: number): Promise<Boolean> {
+    return new Promise(async (rs, rj) => {
+      console.log('ID: ', id);
+      const updateResult = await this.ORDERS_REPOSITORY.update(
+        { shipped: true },
+        { where: { id } },
+      ).catch(err => rj(err));
+      if (!updateResult || isEmpty(updateResult))
+        return rj(new NotFoundException(`No order with id: ${id} found`));
+      else {
+        return rs(true);
+      }
+    });
+  }
+
+  getOrderProducts(orderId: number): Promise<ProductWithQuantity[]> {
+    return new Promise(async (rs, rj) => {
+      const orderWithProducts = await this.ORDERS_REPOSITORY.findOne({
+        where: { id: orderId },
+        include: [{ model: Product, as: 'products' }],
+      }).catch(err => rj(err));
+
+      if (
+        orderWithProducts &&
+        !isEmpty(orderWithProducts) &&
+        orderWithProducts.products
+      ) {
+        //Get Each Order's Product's quantity
+        const orderProducts = await this.ORDER_PRODUCTS_REPOSITORY.findAll({
+          where: { order: orderId },
+        }).catch(err => rj(err));
+
+        if (orderProducts && !isEmpty(orderProducts)) {
+          const productsWithQuantity: ProductWithQuantity[] = [];
+          for (let i = 0; i < orderProducts.length; i++) {
+            if (orderProducts[i].product === orderWithProducts.products[i].id)
+              productsWithQuantity.push({
+                product: orderWithProducts.products[i],
+                quantity: orderProducts[i].quantity,
+              });
+          }
+          return rs(productsWithQuantity);
+        } else {
+          return rj(
+            new NotFoundException(
+              `No Products found for order with id: ${orderId}`,
+            ),
+          );
+        }
+      } else {
+        return rj(
+          new NotFoundException(
+            `No Products found for order with id: ${orderId}`,
+          ),
+        );
       }
     });
   }

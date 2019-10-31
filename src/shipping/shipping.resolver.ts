@@ -15,7 +15,11 @@ export class ShippingResolver {
   }
 
   @Query(returns => Shipping, { name: 'shipping' })
-  async getShippingByWilaya(@Args('wilaya') wilaya: string) {}
+  async getShippingByWilaya(@Args('wilaya') wilaya: string) {
+    return await this.shippingsService.findByWilaya(wilaya).catch(err => {
+      throw err;
+    });
+  }
 
   //TODO: Make this protected route (AUTH)
   @Mutation(returns => Shipping, { name: 'storeShipping' })

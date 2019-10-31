@@ -7,7 +7,7 @@ const productTypes = Object.values(ProductTypes).map((type: string) =>
 );
 
 @InputType()
-export class NewProductInput {
+export class ProductInput {
   @Field()
   name: string;
 

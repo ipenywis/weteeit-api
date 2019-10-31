@@ -2,7 +2,8 @@ import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
 import { Order } from './models/order';
 import { NewOrderInput } from './dto/new-order.input';
 import { OrderSerivce } from './order.service';
-import { BadRequestException, HttpException, Res } from '@nestjs/common';
+import { Int } from 'type-graphql';
+import { ProductWithQuantity } from './types';
 
 @Resolver(of => Order)
 //@UseFilters(SequelizeExceptionFilter)
@@ -12,6 +13,13 @@ export class OrderResolver {
   @Query(returns => [Order], { name: 'orders' })
   async getOrders() {
     return await this.ordersService.findAll().catch(err => {
+      throw err;
+    });
+  }
+
+  @Query(returns => [ProductWithQuantity], { name: 'orderProducts' })
+  async getOrderProducts(@Args({ type: () => Int, name: 'id' }) id: number) {
+    return await this.ordersService.getOrderProducts(id).catch(err => {
       throw err;
     });
   }
@@ -41,7 +49,15 @@ export class OrderResolver {
         throw err;
       });
 
-    console.log('Order: ', order);
     return order;
+  }
+
+  @Mutation(returns => Boolean, { nullable: true, name: 'orderShipped' })
+  async orderShipped(
+    @Args({ name: 'id', type: () => Int, nullable: false }) id: number,
+  ) {
+    return await this.ordersService.setOrderShipped(id).catch(err => {
+      throw err;
+    });
   }
 }

@@ -2,7 +2,7 @@ import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
 import { Product } from './models/product';
 import { ProductArgs } from './dto/products.args';
 import { ProductService } from './product.service';
-import { NewProductInput } from './dto/new-product.input';
+import { ProductInput } from './dto/product.input';
 import { Int, ObjectType } from 'type-graphql';
 import { ProductsWithPagination } from './types';
 
@@ -51,7 +51,7 @@ export class ProductResolver {
 
   @Mutation(returns => Product)
   async storeProduct(
-    @Args('newProductData') newProductData: NewProductInput,
+    @Args('newProductData') newProductData: ProductInput,
   ): Promise<Product> {
     const product = await this.productsService
       .insertProduct(newProductData)
@@ -59,5 +59,36 @@ export class ProductResolver {
         throw err;
       });
     return product;
+  }
+
+  @Query(returns => Boolean, { name: 'productExists' })
+  async productExists(@Args('name') name: string): Promise<boolean> {
+    const exists = await this.productsService.productExists(name).catch(err => {
+      throw err;
+    });
+    return exists;
+  }
+
+  @Mutation(returns => Boolean, { name: 'deleteProduct' })
+  async deleteProduct(@Args('name') name: string): Promise<boolean> {
+    const isProductDeleted = await this.productsService
+      .deleteProduct(name)
+      .catch(err => {
+        throw err;
+      });
+    return isProductDeleted;
+  }
+
+  @Mutation(returns => Product, { name: 'updateProduct' })
+  async updateProduct(
+    @Args({ name: 'id', type: () => Int }) id: number,
+    @Args('updatedProductData') updatedProductData: ProductInput,
+  ) {
+    const updatedProduct = await this.productsService
+      .updateProduct(id, updatedProductData)
+      .catch(err => {
+        throw err;
+      });
+    return updatedProduct;
   }
 }
