@@ -22,6 +22,7 @@ type Mutation {
   orderShipped(id: Int!): Boolean
   storeShipping(newShippingInput: NewShippingInput!): shipping!
   updateShipping(updateShippingInput: NewShippingInput!, id: Int!): Boolean!
+  deleteShipping(id: Int!): Boolean!
 }
 
 input NewOrderInput {

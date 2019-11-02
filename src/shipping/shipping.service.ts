@@ -80,4 +80,14 @@ export class ShippingService {
       else return rs(true);
     });
   }
+
+  deleteShipping(id: number): Promise<Boolean> {
+    return new Promise(async (rs, rj) => {
+      const deletedShipping = await this.SHIPPINGS_REPOSITORY.destroy({
+        where: { id },
+      }).catch(err => rj(err));
+      if (!deletedShipping) return rs(false);
+      else return rs(true);
+    });
+  }
 }

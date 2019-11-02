@@ -2,7 +2,7 @@ import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
 import { Shipping } from './models/shipping';
 import { ShippingService } from './shipping.service';
 import { NewShippingInput } from './dto/ new-shipping.input';
-import { Int } from 'type-graphql';
+import { Int, Arg } from 'type-graphql';
 
 @Resolver(of => Shipping)
 export class ShippingResolver {
@@ -51,5 +51,12 @@ export class ShippingResolver {
       .catch(err => {
         throw err;
       });
+  }
+
+  @Mutation(returns => Boolean, { name: 'deleteShipping' })
+  async deleteShipping(@Args({ type: () => Int, name: 'id' }) id: number) {
+    return await this.shippingsService.deleteShipping(id).catch(err => {
+      throw err;
+    });
   }
 }
