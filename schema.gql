@@ -21,6 +21,7 @@ type Mutation {
   storeOrder(newOrderData: NewOrderInput!): Order
   orderShipped(id: Int!): Boolean
   storeShipping(newShippingInput: NewShippingInput!): shipping!
+  updateShipping(updateShippingInput: NewShippingInput!, id: Int!): Boolean!
 }
 
 input NewOrderInput {
@@ -116,6 +117,7 @@ type Query {
   orderByTransactionId(transactionId: String!): Order!
   shippings: [shipping!]!
   shipping(wilaya: String!): shipping!
+  shippingExists(wilaya: String!): Boolean!
   getAuthenticated: AuthAdmin
 }
 

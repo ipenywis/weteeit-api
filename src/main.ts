@@ -11,7 +11,7 @@ async function bootstrap() {
   //Cookie Parser
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
-  //TODO: Disable CORS for DEV-ONLY
+  //TODO: Disable CORS for (DEV-ONLY)
   app.enableCors();
   await app.listen(3000);
 }

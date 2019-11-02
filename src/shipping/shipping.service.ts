@@ -32,10 +32,24 @@ export class ShippingService {
 
   findByWilaya(wilaya: string): Promise<Shipping> {
     return new Promise(async (rs, rj) => {
-      const shipping = await this.SHIPPINGS_REPOSITORY.findOne({ where: { wilaya } }).catch((err) => rj(err));
-      if(!shipping || isEmpty(shipping))
-        return rj(new NotFoundException("No Shipping details found for wilaya"));
+      const shipping = await this.SHIPPINGS_REPOSITORY.findOne({
+        where: { wilaya },
+      }).catch(err => rj(err));
+      if (!shipping || isEmpty(shipping))
+        return rj(
+          new NotFoundException('No Shipping details found for wilaya'),
+        );
       return rs(shipping);
+    });
+  }
+
+  shippingExists(wilaya: string): Promise<Boolean> {
+    return new Promise(async (rs, rj) => {
+      const shipping = await this.SHIPPINGS_REPOSITORY.findOne({
+        where: { wilaya },
+      }).catch(err => rj(err));
+      if (!shipping || isEmpty(shipping)) return rs(false);
+      else return rs(true);
     });
   }
 
@@ -48,6 +62,22 @@ export class ShippingService {
       if (!shipping || isEmpty(shipping))
         return rj(new BadRequestException('Could Not Create Shipping'));
       return rs(shipping);
+    });
+  }
+
+  updateShipping(
+    id: number,
+    shippingInput: NewShippingInput,
+  ): Promise<Boolean> {
+    return new Promise(async (rs, rj) => {
+      const updatedShipping = await this.SHIPPINGS_REPOSITORY.update(
+        shippingInput,
+        { where: { id } },
+      ).catch(err => rj(err));
+
+      if (!updatedShipping || isEmpty(updatedShipping))
+        return rj(new NotFoundException('No Shipping Found with id'));
+      else return rs(true);
     });
   }
 }
