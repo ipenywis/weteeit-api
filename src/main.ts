@@ -8,6 +8,9 @@ dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  console.log('Environment: ', process.env.NODE_ENV);
+
   //Cookie Parser
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());

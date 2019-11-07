@@ -133,9 +133,10 @@ export class OrderSerivce {
 
         //Add Order=>Product OrderProduct join table
         for (const product of products) {
-          const productWithQuantity = orderInput.products.find(
-            item => item.name === product.name,
-          );
+          const productWithQuantity = orderInput.products.find(item => {
+            console.log('Adding Order: ', product.name, item.name);
+            return item.name === product.name;
+          });
           const quantity = productWithQuantity.quantity;
           await order
             .addProducts(product, { through: { quantity } })
@@ -201,7 +202,10 @@ export class OrderSerivce {
         if (orderProducts && !isEmpty(orderProducts)) {
           const productsWithQuantity: ProductWithQuantity[] = [];
           for (let i = 0; i < orderProducts.length; i++) {
-            if (orderProducts[i].product === orderWithProducts.products[i].id)
+            if (
+              orderWithProducts.products[i] &&
+              orderProducts[i].product === orderWithProducts.products[i].id
+            )
               productsWithQuantity.push({
                 product: orderWithProducts.products[i],
                 quantity: orderProducts[i].quantity,
