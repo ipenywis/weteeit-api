@@ -13,6 +13,7 @@ import { PaginationService } from '../pagination/pagination.service';
 import { ProductsWithPagination } from '../products/types';
 import { Op } from 'sequelize';
 import { IFindOptions } from 'sequelize-typescript';
+import { randomTimeKey } from '../utils/common';
 
 @Injectable()
 export class ProductService {
@@ -117,9 +118,12 @@ export class ProductService {
   insertProduct(productInput: ProductInput): Promise<Product> {
     return new Promise(async (rs, rj) => {
       productInput = JSON.parse(JSON.stringify(productInput));
-      const createdProduct = await this.PRODUCTS_REPOSITORY.create(
-        productInput,
-      ).catch(err => {
+      //Generate Unique Random Key
+      const randomKey = randomTimeKey();
+      const createdProduct = await this.PRODUCTS_REPOSITORY.create({
+        ...productInput,
+        key: randomKey,
+      }).catch(err => {
         rj(err);
       });
       if (!createdProduct || isEmpty(createdProduct))

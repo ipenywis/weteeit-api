@@ -80,6 +80,7 @@ type paginationMetaDataClass {
 
 type Product {
   id: Int!
+  key: String
   name: String!
   type: String!
   available: Boolean!

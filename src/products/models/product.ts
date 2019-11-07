@@ -24,6 +24,10 @@ export class Product extends Model<Product> {
   @Field(type => Int)
   id: number;
 
+  @Column({ type: DataType.STRING, unique: true })
+  @Field({ nullable: true })
+  key: string;
+
   @Column({
     allowNull: false,
     unique: true,
