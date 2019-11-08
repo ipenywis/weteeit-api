@@ -7,7 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { AdminResolver } from './admin.resolver';
 
 @Module({
-  imports: [ConfigModule, AuthModule, ConfigModule, AuthModule],
+  imports: [ConfigModule, AuthModule, ConfigModule],
   controllers: [AdminController],
   providers: [...adminsProviders, AdminService, AdminResolver],
 })

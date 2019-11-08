@@ -1,8 +1,10 @@
-import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Int } from 'type-graphql';
+import { GqlAuthGuard } from '../guards/admin.guard';
+import { NewShippingInput } from './dto/ new-shipping.input';
 import { Shipping } from './models/shipping';
 import { ShippingService } from './shipping.service';
-import { NewShippingInput } from './dto/ new-shipping.input';
-import { Int, Arg } from 'type-graphql';
 
 @Resolver(of => Shipping)
 export class ShippingResolver {
@@ -29,7 +31,7 @@ export class ShippingResolver {
     });
   }
 
-  //TODO: Make this protected route (AUTH)
+  @UseGuards(GqlAuthGuard)
   @Mutation(returns => Shipping, { name: 'storeShipping' })
   async storeShipping(
     @Args('newShippingInput') newShippingData: NewShippingInput,
@@ -41,6 +43,7 @@ export class ShippingResolver {
       });
   }
 
+  @UseGuards(GqlAuthGuard)
   @Mutation(returns => Boolean, { name: 'updateShipping' })
   async updateShipping(
     @Args({ type: () => Int, name: 'id' }) id: number,
@@ -53,6 +56,7 @@ export class ShippingResolver {
       });
   }
 
+  @UseGuards(GqlAuthGuard)
   @Mutation(returns => Boolean, { name: 'deleteShipping' })
   async deleteShipping(@Args({ type: () => Int, name: 'id' }) id: number) {
     return await this.shippingsService.deleteShipping(id).catch(err => {

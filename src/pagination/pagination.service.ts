@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService, IConfig } from '../config/config.service';
-import { Model } from 'sequelize';
-import { Product } from '../products/models/product';
-import { Order } from '../orders/models/order';
-import { IPaginationMetadata } from '../typings/types';
 import { ICountOptions } from 'sequelize-typescript';
+import { ConfigService, IConfig } from '../config/config.service';
+import { Order } from '../orders/models/order';
+import { Product } from '../products/models/product';
+import { IPaginationMetadata } from '../typings/types';
 
 export interface IPaginationQuery {
   limit: number;

@@ -1,18 +1,17 @@
 import {
+  BelongsToMany,
   Column,
   DataType,
-  Table,
   Model,
-  ForeignKey,
-  BelongsToMany,
+  Table,
 } from 'sequelize-typescript';
+import {
+  BelongsToManyAddAssociationMixin,
+  BelongsToManyGetAssociationsMixin,
+} from 'sequelize/types';
 import { Field, Int, ObjectType } from 'type-graphql';
 import { Product } from '../../products/models/product';
 import { OrderProduct } from './orderProduct';
-import {
-  BelongsToManyGetAssociationsMixin,
-  BelongsToManyAddAssociationMixin,
-} from 'sequelize/types';
 
 @Table({ tableName: 'orders' })
 @ObjectType()

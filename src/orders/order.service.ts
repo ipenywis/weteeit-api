@@ -1,16 +1,16 @@
 import {
-  Injectable,
-  Inject,
-  NotFoundException,
   BadRequestException,
+  Inject,
+  Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
-import { Order } from './models/order';
 import { isEmpty } from 'lodash';
 import { NewOrderInput } from '../orders/dto/new-order.input';
-import { ProductService } from '../products/product.service';
 import { OrderProduct } from '../orders/models/orderProduct';
 import { Product } from '../products/models/product';
+import { ProductService } from '../products/product.service';
+import { Order } from './models/order';
 import { ProductWithQuantity } from './types';
 
 @Injectable()

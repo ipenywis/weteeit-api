@@ -1,26 +1,25 @@
 import {
-  Post,
-  UseGuards,
-  Controller,
   Body,
-  InternalServerErrorException,
   ConflictException,
-  UseInterceptors,
+  Controller,
   Get,
-  Res,
-  Req,
+  InternalServerErrorException,
   Param,
+  Post,
+  Res,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { AuthGuard } from '../guards/admin.guard';
-import { CreateAdminDTO } from '../admin/dto/register.dto';
+import { Response as EResponse } from 'express';
 import { AdminService } from '../admin/admin.service';
+import { LoginDTO } from '../admin/dto/login.dto';
+import { CreateAdminDTO } from '../admin/dto/register.dto';
+import { AuthService } from '../auth/auth.service';
+import { ConfigService } from '../config/config.service';
+import { AuthGuard } from '../guards/admin.guard';
+import { ResponseInterceptor } from '../interceptors/response.interceptor';
 import Response from '../responses/response';
 import { Admin } from './models/admin';
-import { ResponseInterceptor } from '../interceptors/response.interceptor';
-import { LoginDTO } from '../admin/dto/login.dto';
-import { AuthService } from '../auth/auth.service';
-import { Response as EResponse, Request as ERequest } from 'express';
-import { ConfigService } from '../config/config.service';
 
 @Controller('admin')
 @UseInterceptors(ResponseInterceptor)
@@ -32,7 +31,6 @@ export class AdminController {
   ) {}
 
   @Post('login')
-  //@UseGuards(AuthGuard)
   async login(@Body() loginDTO: LoginDTO, @Res() response: EResponse) {
     const jwtToken = await this.adminService.login(loginDTO).catch(err => {
       throw err;

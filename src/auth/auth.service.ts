@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Admin } from '../admin/models/admin';
-import { ObjectType, Field } from 'type-graphql';
+import { Field, ObjectType } from 'type-graphql';
 
 @ObjectType()
 export class AuthAdmin {

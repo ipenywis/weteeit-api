@@ -1,12 +1,12 @@
 import {
-  Injectable,
-  Inject,
-  NotFoundException,
   BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
 } from '@nestjs/common';
-import { Shipping } from './models/shipping';
 import { isEmpty } from 'lodash';
 import { NewShippingInput } from './dto/ new-shipping.input';
+import { Shipping } from './models/shipping';
 
 @Injectable()
 export class ShippingService {

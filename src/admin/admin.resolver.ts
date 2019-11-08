@@ -1,14 +1,9 @@
-import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
-import {
-  BadRequestException,
-  HttpException,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
-import { Admin } from './models/admin';
-import { AdminService } from './admin.service';
+import { UseGuards } from '@nestjs/common';
+import { Query, Resolver } from '@nestjs/graphql';
+import { AuthAdmin, AuthService } from '../auth/auth.service';
 import { GqlAuthGuard } from '../guards/admin.guard';
-import { AuthService, AuthAdmin } from '../auth/auth.service';
+import { AdminService } from './admin.service';
+import { Admin } from './models/admin';
 
 @Resolver(of => Admin)
 @UseGuards(GqlAuthGuard)

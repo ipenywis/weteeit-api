@@ -1,14 +1,14 @@
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
+  Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import { ConfigService } from '../config/config.service';
-import { AuthService, AuthAdmin } from '../auth/auth.service';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { Request } from 'express';
+import jwt from 'jsonwebtoken';
+import { AuthAdmin, AuthService } from '../auth/auth.service';
+import { ConfigService } from '../config/config.service';
 
 @Injectable()
 export abstract class AbstractAuthGuard implements CanActivate {

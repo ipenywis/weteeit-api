@@ -1,11 +1,11 @@
+import { ConnectionError, ConnectionTimedOutError } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
-import { ConnectionTimedOutError, ConnectionError } from 'sequelize';
-import { ProdConfig, DevConfig } from './config';
-import { Product } from '../products/models/product';
-import { Order } from '../orders/models/order';
-import { Shipping } from '../shipping/models/shipping';
-import { OrderProduct } from '../orders/models/orderProduct';
 import { Admin } from '../admin/models/admin';
+import { Order } from '../orders/models/order';
+import { OrderProduct } from '../orders/models/orderProduct';
+import { Product } from '../products/models/product';
+import { Shipping } from '../shipping/models/shipping';
+import { DevConfig, ProdConfig } from './config';
 
 export const databaseProviders = [
   {
@@ -21,7 +21,7 @@ export const databaseProviders = [
         //SYNC MODELS METADATA to DB
         return await sequelize.sync();
       } catch (err) {
-        console.log(err);
+        console.error(err);
         //Handle Connection Errors
         if (err instanceof ConnectionTimedOutError)
           console.error(

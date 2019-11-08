@@ -1,16 +1,15 @@
-import { Field, Int, ObjectType } from 'type-graphql';
 import {
+  BelongsToMany,
   Column,
-  Table,
-  Model,
   DataType,
   Default,
-  HasMany,
-  BelongsToMany,
+  Model,
+  Table,
 } from 'sequelize-typescript';
-import { ProductTypes } from '../types';
+import { Field, Int, ObjectType } from 'type-graphql';
 import { Order } from '../../orders/models/order';
 import { OrderProduct } from '../../orders/models/orderProduct';
+import { ProductTypes } from '../types';
 
 @Table({ tableName: 'products' })
 @ObjectType()

@@ -1,19 +1,19 @@
 import {
-  Injectable,
+  BadRequestException,
   Inject,
+  Injectable,
   InternalServerErrorException,
   NotFoundException,
-  BadRequestException,
 } from '@nestjs/common';
-import { Product } from './models/product';
 import { isEmpty } from 'lodash';
-import { ProductInput } from './dto/product.input';
+import { Op } from 'sequelize';
+import { IFindOptions } from 'sequelize-typescript';
 import { ConfigService, IConfig } from '../config/config.service';
 import { PaginationService } from '../pagination/pagination.service';
 import { ProductsWithPagination } from '../products/types';
-import { Op } from 'sequelize';
-import { IFindOptions } from 'sequelize-typescript';
 import { randomTimeKey } from '../utils/common';
+import { ProductInput } from './dto/product.input';
+import { Product } from './models/product';
 
 @Injectable()
 export class ProductService {

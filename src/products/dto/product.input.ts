@@ -1,5 +1,5 @@
-import { Field, Int, InputType } from 'type-graphql';
 import { IsIn } from 'class-validator';
+import { Field, InputType, Int } from 'type-graphql';
 import { ProductTypes } from '../types';
 
 const productTypes = Object.values(ProductTypes).map((type: string) =>

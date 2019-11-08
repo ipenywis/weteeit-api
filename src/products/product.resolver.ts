@@ -1,9 +1,10 @@
-import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
-import { Product } from './models/product';
-import { ProductArgs } from './dto/products.args';
-import { ProductService } from './product.service';
+import { UseGuards } from '@nestjs/common';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Int } from 'type-graphql';
+import { GqlAuthGuard } from '../guards/admin.guard';
 import { ProductInput } from './dto/product.input';
-import { Int, ObjectType } from 'type-graphql';
+import { Product } from './models/product';
+import { ProductService } from './product.service';
 import { ProductsWithPagination } from './types';
 
 @Resolver(of => Product)
@@ -49,6 +50,7 @@ export class ProductResolver {
     return product;
   }
 
+  @UseGuards(GqlAuthGuard)
   @Mutation(returns => Product)
   async storeProduct(
     @Args('newProductData') newProductData: ProductInput,
@@ -69,6 +71,7 @@ export class ProductResolver {
     return exists;
   }
 
+  @UseGuards(GqlAuthGuard)
   @Mutation(returns => Boolean, { name: 'deleteProduct' })
   async deleteProduct(@Args('name') name: string): Promise<boolean> {
     const isProductDeleted = await this.productsService
@@ -79,6 +82,7 @@ export class ProductResolver {
     return isProductDeleted;
   }
 
+  @UseGuards(GqlAuthGuard)
   @Mutation(returns => Product, { name: 'updateProduct' })
   async updateProduct(
     @Args({ name: 'id', type: () => Int }) id: number,

@@ -1,6 +1,6 @@
 import { Field, ObjectType } from 'type-graphql';
-import { Product } from './models/product';
 import { PaginationMetaDataClass } from '../typings/types';
+import { Product } from './models/product';
 
 export enum ProductTypes {
   TSHIRT = 'TSHIRT',
