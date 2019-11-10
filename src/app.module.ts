@@ -14,7 +14,7 @@ import { AdminModule } from './admin/admin.module';
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
       debug: false,
-      playground: true,
+      playground: process.env.NODE_ENV !== 'production',
       autoSchemaFile: 'schema.gql',
       introspection: true,
       context: ({ req }) => ({ req }),
